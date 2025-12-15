@@ -8,11 +8,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pass = $_POST['password'] ?? '';
 
     if (isset($USERS[$user]) && password_verify($pass, $USERS[$user])) {
-        // Vulnerable: we set the session ID supplied by the client!
+        // --- PATCH D'AUTHENTIFICATION (Session Fixation) ---
+        // 1. Suppression du champ sessid (dans la partie HTML)
+        // 2. Régénération de l'ID de session pour invalider l'ancien (fixé)
+        session_regenerate_id(true);
 
-        if (!empty($_POST['sessid'])) {
-            session_id($_POST['sessid']);
-        }
         $_SESSION['user'] = $user;
         header('Location: dashboard.php');
         exit;
